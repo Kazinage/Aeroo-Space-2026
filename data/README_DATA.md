@@ -1,27 +1,38 @@
-# Данные и скачивание
+# FlaringWatch CA3 (KAZ/UZB/TKM) - MVP мониторинга факельного сжигания газа
 
-Проект использует открытые объектные (табличные) спутниковые продукты по факельному сжиганию газа (VIIRS Nightfire / flare site surveys).
+Этот репозиторий содержит воспроизводимый пайплайн и MVP-продукт для мониторинга газового факельного сжигания (gas flaring) в странах CA3: Казахстан, Узбекистан, Туркменистан на основе объектных (табличных) спутниковых детекций VIIRS Nightfire за 2012-2019 гг.
 
-## Что нужно скачать
-Скачайте годовые файлы формата CSV:
-- eog_global_flare_survey_2012_flare_list.csv
-- ...
-- eog_global_flare_survey_2019_flare_list.csv
-а также при необходимости:
-- eog_global_flare_survey_2012_country_summary.csv
-- ...
-- eog_global_flare_survey_2019_country_summary.csv
+## Что делает проект (MVP)
+- Строит тренды по странам (объем/активность, устойчивость детекций)
+- Выполняет ML-сегментацию impact на 3 класса (низкий/средний/высокий)
+- Формирует alerts:
+  - всплески по стране-год
+  - топ-объекты для приоритизации проверок
+- Генерирует интерактивную карту HTML (границы стран, heatmap, маркеры alerts, popups)
 
-## Куда положить в Colab
-В Colab создайте папку:
-`/content/data/raw/`
+## Быстрый запуск в Google Colab (5 минут)
+1) Откройте ноутбук:
+   `notebooks/Aero_space_competition.ipynb`
+2) В Colab: Runtime -> Change runtime type -> Python 3.
+3) Установите зависимости (в первой ячейке ноутбука):
+   `!pip -q install -r requirements.txt`
+4) Данные:
+   - Демо-режим: используйте `data/sample_data/` (ничего скачивать не нужно)
+   - Полный режим: скачайте годовые CSV и загрузите в `/content/data/raw/`
+     (см. `data/README_DATA.md`)
+5) Запустите все ячейки по порядку. Итоги появятся в `outputs/`.
 
-И загрузите туда все CSV.
+## Артефакты (outputs)
+- Интерактивная карта: `outputs/ca3_flaring_watch_product_ru.html`
+- Графики: `outputs/trend_total_flaring_ru.png`, `outputs/trend_persistence_ru.png`
+- ML: `outputs/ca3_flare_list_with_clusters.csv`, `outputs/ca3_cluster_interpretation_ru.csv`
+- Alerts: `outputs/alerts_country_year_ru.csv`, `outputs/alerts_sites_top50_ru.csv`
 
-Пример структуры:
-`/content/data/raw/eog_global_flare_survey_2012_flare_list.csv`
+## Структура репозитория
+- `notebooks/` - основной ноутбук (точка входа)
+- `src/` - функции для загрузки, обработки, ML и визуализации
+- `data/` - инструкции по данным + sample_data для демо
+- `outputs/` - результаты выполнения (можно не хранить в GitHub)
 
-## Демо-режим
-Для быстрого запуска без скачивания полных данных используется:
-`data/sample_data/`
-Это небольшой фрагмент, достаточный для демонстрации пайплайна.
+## Ограничения (важно)
+Результаты являются proxy-оценкой активности факелов по спутниковым детекциям и не являются химическим анализом состава газов. Возможны пропуски и ложные детекции, зависящие от условий наблюдения и алгоритмов обработки.
